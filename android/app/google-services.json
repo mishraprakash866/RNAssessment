@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "721003412483",
+    "project_id": "rnassessment-38c0f",
+    "storage_bucket": "rnassessment-38c0f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:721003412483:android:92372af593da4f3d39e236",
+        "android_client_info": {
+          "package_name": "com.rnassessment"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCZ_nWP5Rx_S4YJSXoYRy_WoYhVwbsnnRc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
