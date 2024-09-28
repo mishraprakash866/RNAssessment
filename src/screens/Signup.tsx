@@ -51,6 +51,7 @@ const Signup = ({ navigation }: any) => {
             <TextInput
                 style={GLOBALSTYLE.input}
                 placeholder="Full Name"
+                placeholderTextColor="#777"
                 value={fullName}
                 onChangeText={setFullName}
             />
@@ -59,6 +60,7 @@ const Signup = ({ navigation }: any) => {
                 style={GLOBALSTYLE.input}
                 placeholder="Email"
                 keyboardType='email-address'
+                placeholderTextColor="#777"
                 value={email}
                 onChangeText={setEmail}
             />
@@ -66,6 +68,7 @@ const Signup = ({ navigation }: any) => {
             <TextInput
                 style={GLOBALSTYLE.input}
                 placeholder="Password"
+                placeholderTextColor="#777"
                 value={password}
                 onChangeText={setPassword}
                 secureTextEntry

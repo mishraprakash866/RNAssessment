@@ -75,12 +75,14 @@ const Profile = ({ navigation }: any) => {
             <TextInput
                 placeholder="Full Name"
                 value={fullName}
+                placeholderTextColor="#777"
                 onChangeText={setFullName}
                 style={GLOBALSTYLE.input}
             />
             <TextInput
                 placeholder="Email"
                 value={email}
+                placeholderTextColor="#777"
                 onChangeText={setEmail}
                 style={GLOBALSTYLE.input}
             />
