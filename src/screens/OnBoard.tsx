@@ -9,7 +9,7 @@ const OnBoard = ({navigation}: any) => {
             if(user){
                 navigation.reset({
                     index: 0,
-                    routes: [{name: ROUTENAME.bottomstack.Home}]
+                    routes: [{name: ROUTENAME.bottomstack.index}]
                 })
             }else{
                 navigation.reset({
@@ -23,7 +23,7 @@ const OnBoard = ({navigation}: any) => {
 
     return (
         <>
-        
+            
         </>
     );
 

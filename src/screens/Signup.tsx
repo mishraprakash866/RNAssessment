@@ -1,32 +1,46 @@
 import React, { useState } from 'react';
-import { View, TextInput, TouchableOpacity, Text, StyleSheet } from 'react-native';
+import { View, TextInput, TouchableOpacity, Text, StyleSheet, ActivityIndicator, Alert } from 'react-native';
 import { auth, firestore } from '../config/Firebase';
 import { db } from '../config/sqliteDB';
+import { GLOBALSTYLE, ROUTENAME } from '../config/Constants';
+import moment from 'moment';
 
 const Signup = ({ navigation }: any) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [fullName, setFullName] = useState('');
+    const [loader, setLoader] = useState(false);
 
     const handleSignup = async () => {
         try {
+            setLoader(true);
             const user = await auth().createUserWithEmailAndPassword(email, password);
-            const userData = { uid: user.user.uid, fullName, email };
+            const userData = { uid: user.user.uid, fullName, email, createdAt: moment().toString() };
 
-            // Save in Firestore
             await firestore().collection('users').doc(user.user.uid).set(userData);
 
-            // Save in SQLite
-            (await
-                // Save in SQLite
-                db).transaction((tx) => {
-                    tx.executeSql('CREATE TABLE IF NOT EXISTS users (uid TEXT PRIMARY KEY, fullName TEXT, email TEXT)');
+            const tempUser = await auth().signInWithEmailAndPassword(email, password);
+            if(tempUser?.user?.uid){
+
+                (await db).transaction((tx) => {
+                    tx.executeSql('CREATE TABLE IF NOT EXISTS users (uid TEXT PRIMARY KEY, fullName TEXT, email TEXT, contact TEXT, address TEXT)');
                     tx.executeSql('INSERT INTO users (uid, fullName, email) VALUES (?, ?, ?)', [userData.uid, fullName, email]);
                 });
 
-            navigation.navigate('Login');
+                navigation.reset({
+                    index:0,
+                    routes:[{name:ROUTENAME.bottomstack.index}]
+                })
+
+            }else{
+                navigation.navigate('Login');
+                Alert.alert('Message', 'User Registered Successfully.')
+            }
         } catch (error) {
             console.log(error);
+            Alert.alert('Error', 'Email address already exist!');
+        } finally {
+            setLoader(false);
         }
     };
 
@@ -35,29 +49,34 @@ const Signup = ({ navigation }: any) => {
             <Text style={styles.title}>Create Account</Text>
 
             <TextInput
-                style={styles.input}
+                style={GLOBALSTYLE.input}
                 placeholder="Full Name"
                 value={fullName}
                 onChangeText={setFullName}
             />
 
             <TextInput
-                style={styles.input}
+                style={GLOBALSTYLE.input}
                 placeholder="Email"
+                keyboardType='email-address'
                 value={email}
                 onChangeText={setEmail}
             />
 
             <TextInput
-                style={styles.input}
+                style={GLOBALSTYLE.input}
                 placeholder="Password"
                 value={password}
                 onChangeText={setPassword}
                 secureTextEntry
             />
 
-            <TouchableOpacity style={styles.button} onPress={handleSignup}>
-                <Text style={styles.buttonText}>Sign Up</Text>
+            <TouchableOpacity disabled={loader} style={GLOBALSTYLE.button} onPress={handleSignup}>
+                {loader ?
+                    <ActivityIndicator size={20} color={'#fff'} />
+                    :
+                    <Text style={GLOBALSTYLE.buttonText}>Sign Up</Text>
+                }
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -84,27 +103,6 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         marginBottom: 20,
         color: '#051d5f',
-    },
-    input: {
-        width: '90%',
-        height: 50,
-        backgroundColor: '#e8f0fe',
-        borderRadius: 8,
-        paddingHorizontal: 10,
-        marginBottom: 10,
-    },
-    button: {
-        backgroundColor: '#1e90ff',
-        width: '90%',
-        padding: 15,
-        borderRadius: 8,
-        alignItems: 'center',
-        marginTop: 20,
-    },
-    buttonText: {
-        color: '#fff',
-        fontSize: 18,
-        fontWeight: 'bold',
     },
     link: {
         marginTop: 20,

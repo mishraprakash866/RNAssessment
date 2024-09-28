@@ -13,7 +13,7 @@ const Main = () => {
 
     return (
         <NavigationContainer>
-            <Stack.Navigator initialRouteName={ROUTENAME.bottomstack.index} screenOptions={{headerShown:false}}>
+            <Stack.Navigator initialRouteName={ROUTENAME.OnBoard} screenOptions={{headerShown:false}}>
                 <Stack.Screen name={ROUTENAME.OnBoard} component={OnBoard} />
                 <Stack.Screen name={ROUTENAME.Login} component={Login} />
                 <Stack.Screen name={ROUTENAME.Signup} component={Signup} />

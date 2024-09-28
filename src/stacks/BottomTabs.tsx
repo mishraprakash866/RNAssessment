@@ -7,6 +7,7 @@ import Contact from "../screens/Contact";
 import Profile from "../screens/Profile";
 import { ROUTENAME } from "../config/Constants";
 import { SafeAreaProvider, useSafeAreaInsets } from "react-native-safe-area-context";
+import UserList from "../screens/UserList";
 
 const Tab = createBottomTabNavigator();
 
@@ -52,6 +53,7 @@ const BottomTabs = () => {
                 <Tab.Screen name={ROUTENAME.bottomstack.Dashboard} component={Dashboard} />
                 <Tab.Screen name={ROUTENAME.bottomstack.Contact} component={Contact} />
                 <Tab.Screen name={ROUTENAME.bottomstack.Profile} component={Profile} />
+                <Tab.Screen name={ROUTENAME.bottomstack.UserList} component={UserList} />
             </Tab.Navigator>
         </SafeAreaProvider>
     );

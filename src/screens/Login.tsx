@@ -1,17 +1,46 @@
 import React, { useState } from 'react';
-import { View, TextInput, Button, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { auth } from '../config/Firebase';
+import { View, TextInput, Button, Text, TouchableOpacity, StyleSheet, ActivityIndicator, Alert } from 'react-native';
+import { auth, firestore } from '../config/Firebase';
+import { GLOBALSTYLE, ROUTENAME } from '../config/Constants';
+import { db } from '../config/sqliteDB';
 
 const Login = ({ navigation }: any) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [loader, setLoader] = useState(false);
 
     const handleLogin = async () => {
         try {
+            setLoader(true);
             const user = await auth().signInWithEmailAndPassword(email, password);
-            console.log(user);
+            if (user?.user?.uid) {
+
+                const tempUserDoc = await firestore().collection('users').doc(user.user.uid).get();
+                const tempUserData = tempUserDoc.data();
+
+                (await db).transaction((tx) => {
+                    tx.executeSql('CREATE TABLE IF NOT EXISTS users (uid TEXT PRIMARY KEY, fullName TEXT, email TEXT, contact TEXT, address TEXT)');
+                    tx.executeSql('INSERT INTO users (uid, fullName, email, contact, address) VALUES (?, ?, ?, ?, ?)', 
+                        [
+                            tempUserData?.uid, 
+                            tempUserData?.fullName, 
+                            tempUserData?.email, 
+                            tempUserData?.contact || '',
+                            tempUserData?.address || ''
+                        ]
+                    );
+                });
+
+                navigation.reset({
+                    index: 0,
+                    routes: [{ name: ROUTENAME.bottomstack.index }]
+                })
+            }
         } catch (error) {
             console.log(error);
+            Alert.alert('Error', 'Please check credentials!!!');
+        } finally {
+            setLoader(false);
         }
     };
 
@@ -20,22 +49,26 @@ const Login = ({ navigation }: any) => {
             <Text style={styles.title}>Welcome Back</Text>
 
             <TextInput
-                style={styles.input}
+                style={GLOBALSTYLE.input}
                 placeholder="Email"
                 value={email}
                 onChangeText={setEmail}
             />
 
             <TextInput
-                style={styles.input}
+                style={GLOBALSTYLE.input}
                 placeholder="Password"
                 value={password}
                 onChangeText={setPassword}
                 secureTextEntry
             />
 
-            <TouchableOpacity style={styles.button} onPress={handleLogin}>
-                <Text style={styles.buttonText}>Login</Text>
+            <TouchableOpacity disabled={loader} style={GLOBALSTYLE.button} onPress={handleLogin}>
+                {loader ?
+                    <ActivityIndicator size={20} color={'#fff'} />
+                    :
+                    <Text style={GLOBALSTYLE.buttonText}>Login</Text>
+                }
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -61,27 +94,6 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         marginBottom: 20,
         color: '#051d5f',
-    },
-    input: {
-        width: '90%',
-        height: 50,
-        backgroundColor: '#e8f0fe',
-        borderRadius: 8,
-        paddingHorizontal: 10,
-        marginBottom: 10,
-    },
-    button: {
-        backgroundColor: '#1e90ff',
-        width: '90%',
-        padding: 15,
-        borderRadius: 8,
-        alignItems: 'center',
-        marginTop: 20,
-    },
-    buttonText: {
-        color: '#fff',
-        fontSize: 18,
-        fontWeight: 'bold',
     },
     link: {
         marginTop: 20,
