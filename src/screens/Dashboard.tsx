@@ -59,7 +59,7 @@ const Dashboard = () => {
     return (
       <View style={styles.loaderContainer}>
         <ActivityIndicator size="large" color="#1e90ff" />
-        <Text>Loading data...</Text>
+        <Text style={{color:'#000'}}>Loading data...</Text>
       </View>
     );
   }
